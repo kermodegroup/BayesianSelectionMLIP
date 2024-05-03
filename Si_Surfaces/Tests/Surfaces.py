@@ -83,7 +83,7 @@ def test_calc(calc):
 
 calc_type = "ACE"
 
-method = "ACEAVGCUR"
+method = "ACECURMEAN"
 Nc = 20
 
 if calc_type == "GAP":
@@ -97,7 +97,7 @@ if os.path.exists(f"../Test_Results/{method}/{method}_Surfaces_{calc_type}.json"
 else:
     data = {}
 
-for N in [11, 22, 44, 88, 121, 242]:#, 484]:
+for N in [5, 10, 20, 50, 100]:
     print(N)
     
     data[str(N)] = {}

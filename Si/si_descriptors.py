@@ -13,3 +13,9 @@ si_soap_descriptor = soap_descriptor(" \
     f0=0.0 \
     covariance_type=dot_product \
 ")
+
+si_ace_descriptor = ace_descriptor(
+    species = ["Si"],
+    order = 3,
+    totaldegree = 16,
+    rcut = 5.0)

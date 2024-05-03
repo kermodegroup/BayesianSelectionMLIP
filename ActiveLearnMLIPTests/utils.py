@@ -64,9 +64,9 @@ def get_dataset_descriptors(dataset, descriptor):
 
         vecs[nats:nats+len(struct), :] = res
 
-        nats += len(struct)
-        
         struct_idxs[nats:nats+len(struct)] = i
+        
+        nats += len(struct)
     
     struct_idxs = np.array(struct_idxs)
 

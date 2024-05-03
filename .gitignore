@@ -1,3 +1,9 @@
-*.xyz
 *.gapconfig
 *.xml*
+*.xyz*
+*.pyc
+*.txt
+*.json
+*.out
+*.png
+*.npy

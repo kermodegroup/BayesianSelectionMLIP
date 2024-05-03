@@ -2,11 +2,11 @@ import ActiveLearnMLIPTests as al_strats
 from ase.io import read, write
 import numpy as np
 import os
-from si_descriptors import si_soap_descriptor, si_ace_descriptor
+from lips_descriptors import lips_soap_descriptor, lips_ace_descriptor
 
 global_params = {
     "N_samples" : 20,
-    "N_structs" : [11, 22, 44, 88, 121, 242, 484, 726],
+    "N_structs" : [20, 50, 100, 200],
     "iso_atom_config_type" : "isolated_atom"
 }
 
@@ -19,7 +19,7 @@ method_params = {
     "SOAPCURMAX" : { # CUR of SOAP Descriptor, using max score per struct
         "method" : al_strats.draw_cur_samples,
         "method_args" : {
-            "desc" : si_soap_descriptor,
+            "desc" : lips_soap_descriptor,
             "aggregate" : np.max
         },
         "write_gap_config" : True
@@ -28,7 +28,7 @@ method_params = {
     "SOAPCURMEAN" : { # CUR of SOAP Descriptor, using mean score per struct
         "method" : al_strats.draw_cur_samples,
         "method_args" : {
-            "desc" : si_soap_descriptor,
+            "desc" : lips_soap_descriptor,
             "aggregate" : np.mean
         },
         "write_gap_config" : True
@@ -37,7 +37,7 @@ method_params = {
     "ACECURMEAN": {# CUR of ACE Descriptor, using mean score per struct
         "method" : al_strats.draw_cur_samples,
         "method_args" : {
-            "desc" : si_ace_descriptor,
+            "desc" : lips_ace_descriptor,
             "aggregate" : np.mean
         },
         "write_gap_config" : False
@@ -45,7 +45,7 @@ method_params = {
     "ACEAVGCUR" : { # CUR of average ACE Descriptor per structure
         "method" : al_strats.draw_avg_cur_samples,
         "method_args" : {
-            "desc" : si_ace_descriptor
+            "desc" : lips_ace_descriptor
         },
         "write_gap_config" : False
     },
@@ -53,7 +53,7 @@ method_params = {
     "ACEAVGKMED" : { # KMedoids of average ACE Descriptor per structure
         "method" : al_strats.draw_avg_kmedoid_samples,
         "method_args" : {
-            "desc" : si_ace_descriptor
+            "desc" : lips_ace_descriptor
         },
         "write_gap_config" : False
     }
@@ -62,15 +62,13 @@ method_params = {
 random_seed = 42
 
 methods_to_gen = [
-    "ACEAVGCUR",
+    "MONTECARLO",
     "ACEAVGKMED",
-    "ACECURMEAN",
-    "MONTECARLO"
+    "ACEAVGCUR",
+    "ACECURMEAN"
 ]
 
-base_gap_config_file = open("Models/GAPs/base_gap_config", "r")
-
-dataset = read("Si_Dataset.xyz", index=":")
+dataset = read("LiPS_Dataset.xyz", index=":")
 
 for method in methods_to_gen:
     print(method)
@@ -89,22 +87,11 @@ for method in methods_to_gen:
 
     samples = func(dataset, **func_args)
 
+    print(method, " generated samples")
+    print("Saving...")
     for i, N in enumerate(global_params["N_structs"]):
         smp = samples[i]
         for j in range(len(smp)):
-            ds_name = f"Si_{method}_N_{N}_Sample_{j}.xyz"
-            gap_name = f"Si_{method}_N_{N}_Sample_{j}.xml" 
-            gap_config_name = f"Si_{method}_N_{N}_Sample_{j}.gapconfig" 
+            ds_name = f"LiPS_{method}_N_{N}_Sample_{j}.xyz"
 
             write(f"AL_Datasets/{method}/{ds_name}", smp[j])
-
-            if params["write_gap_config"]:
-                with open("Models/GAPs/base_gap_config", "r") as base_gap_config_file:
-                    with open(f"AL_Datasets/{method}/{gap_config_name}", "w") as new_config:
-                        new_config.writelines(base_gap_config_file) # create a copy of base config
-                        new_config.writelines(
-                            [
-                                f"gp_file={gap_name}\n",
-                                f"at_file={ds_name}"
-                            ]
-                        )

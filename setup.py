@@ -10,6 +10,7 @@ setup(
     install_requires=['matscipy',
                       'numpy',
                       'quippy',
+                      'scikit-learn-extra',
                       'ase'           
                       ]
 )
