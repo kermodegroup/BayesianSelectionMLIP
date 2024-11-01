@@ -4,10 +4,8 @@ import numpy as np
 import os
 import json
 
-dataset = read("../../Si/Si_Dataset.xyz", index=":")
-
 def test_calc(calc):
-
+    dataset = read("../Total_Dataset.xyz", index=":")
     data = {"Total" : {"E_rmse": 0.0, "N_E" : 0, "F_rmse": 0.0, "N_F" : 0}}
 
     for image in dataset:
@@ -16,7 +14,7 @@ def test_calc(calc):
 
         if config_type not in data.keys():
             data[config_type] = {"E_rmse": 0.0, "N_E" : 0, "F_rmse": 0.0, "N_F" : 0}
-
+        
         image.calc = calc
 
         # Energy per atom
@@ -42,54 +40,74 @@ def test_calc(calc):
 
     return data
 
+from plot_config import *
+
+# methods = [
+#     "ACEBLR"
+# ]
+
+calc = original_gap()
+data = test_calc(calc)
+with open(f"../Test_Results/2018_GAP.json", "w") as f:
+        json.dump(data, f, indent=4)
+
+exit()
+
+methods = descriptor_comparison_plots
+methods = method_comparison_plots
+
+methods= [
+    "MACETBLR",
+]
+
+Nc = 1
 calc_type = "ACE"
 
-method = "MONTECARLO"
-Nc = 20
+for method in methods:
+    print(method)
+    if calc_type == "GAP":
+        calc_fn = test_gap
+    elif calc_type == "ACE":
+        calc_fn = test_ace
 
-if calc_type == "GAP":
-    calc_fn = test_gap
-elif calc_type == "ACE":
-    calc_fn = test_ace
+    if os.path.exists(f"../Test_Results/{method}/{method}_Dataset_Errs_{calc_type}.json"):
+        with open(f"../Test_Results/{method}/{method}_Dataset_Errs_{calc_type}.json", "r") as f:
+            data = json.load(f)
+    else:
+        data = {}
 
-if os.path.exists(f"../Test_Results/{method}/{method}_Dataset_Errs_{calc_type}.json"):
-    with open(f"../Test_Results/{method}/{method}_Dataset_Errs_{calc_type}.json", "r") as f:
-        data = json.load(f)
-else:
-    data = {}
+    for N in [5, 10, 20, 50, 100]:
+        print(N)
+        
+        data[str(N)] = {}
 
-for N in [5, 10, 20, 50, 100]:
-    print(N)
-    
-    data[str(N)] = {}
+        all_calc_data = {}
 
-    all_calc_data = {}
+        for i in range(Nc):
+            print(N, i)
+            calc = calc_fn(method, N, [i])[0]
+            all_calc_data[i] = test_calc(calc)
 
-    for i in range(Nc):
-        print(N, i)
-        calc = calc_fn(method, N, [i])[0]
-        all_calc_data[i] = test_calc(calc)
+        for key in all_calc_data[0].keys():
+            data[str(N)][key] = {
+                "E_rmse_mean" : np.mean([all_calc_data[i][key]["E_rmse"] for i in range(Nc)]),
+                "E_rmse_std" : np.std([all_calc_data[i][key]["E_rmse"] for i in range(Nc)]),
+                "F_rmse_mean" : np.mean([all_calc_data[i][key]["F_rmse"] for i in range(Nc)]),
+                "F_rmse_std" : np.std([all_calc_data[i][key]["F_rmse"] for i in range(Nc)]),
 
-    for key in all_calc_data[0].keys():
-        data[str(N)][key] = {
-            "E_rmse_mean" : np.mean([all_calc_data[i][key]["E_rmse"] for i in range(Nc)]),
-            "E_rmse_std" : np.std([all_calc_data[i][key]["E_rmse"] for i in range(Nc)]),
-            "F_rmse_mean" : np.mean([all_calc_data[i][key]["F_rmse"] for i in range(Nc)]),
-            "F_rmse_std" : np.std([all_calc_data[i][key]["F_rmse"] for i in range(Nc)]),
+                "E_rmse_raw_vals" : list([all_calc_data[i][key]["E_rmse"] for i in range(Nc)]),
+                "F_rmse_raw_vals" : list([all_calc_data[i][key]["F_rmse"] for i in range(Nc)]),
 
-            "E_rmse_raw_vals" : list([all_calc_data[i][key]["E_rmse"] for i in range(Nc)]),
-            "F_rmse_raw_vals" : list([all_calc_data[i][key]["F_rmse"] for i in range(Nc)]),
+                "N_E" : all_calc_data[0][key]["N_E"],
+                "N_F" : all_calc_data[0][key]["N_F"]
+            }
 
-            "N_E" : all_calc_data[0][key]["N_E"],
-            "N_F" : all_calc_data[0][key]["N_F"]
-        }
+    os.makedirs(f"../Test_Results/{method}", exist_ok=True)
 
-os.makedirs(f"../Test_Results/{method}", exist_ok=True)
+    # Ensure keys are sorted as integers
+    Ns = sorted([int(k) for k in data.keys()])
 
-# Ensure keys are sorted as integers
-Ns = sorted([int(k) for k in data.keys()])
+    data = {N: data[str(N)] for N in Ns}
 
-data = {N: data[str(N)] for N in Ns}
-
-with open(f"../Test_Results/{method}/{method}_Dataset_Errs_{calc_type}.json", "w") as f:
-    json.dump(data, f, indent=4)
+    with open(f"../Test_Results/{method}/{method}_Dataset_Errs_{calc_type}.json", "w") as f:
+        json.dump(data, f, indent=4)

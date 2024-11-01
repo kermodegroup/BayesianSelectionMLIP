@@ -72,71 +72,89 @@ def test_calc(calc):
 
 
         # relax expanded cell
-        opt = PreconLBFGS(bulk, logfile=None)
-        opt.run(tol)
+        try:
+            opt = PreconLBFGS(bulk, logfile=None)
+            opt.run(tol)
 
-        eexp  = bulk.get_potential_energy()
-        
-        e_forms.append(0.5*(eexp - ebulk) / np.linalg.norm(np.cross(bulk.cell[0,:],bulk.cell[1,:])))
+            eexp  = bulk.get_potential_energy()
+            
+            e_forms.append(0.5*(eexp - ebulk) / np.linalg.norm(np.cross(bulk.cell[0,:],bulk.cell[1,:])))
+        except RuntimeError:
+            # Skip failures to optimise
+            pass
     return np.array(e_forms) * _e * 1e20
 
 
+
+from plot_config import *
+
+# methods = [
+#     "ACEBLR"
+# ]
+
+methods = descriptor_comparison_plots
+methods = method_comparison_plots
+
+methods= [
+    "MACETBLR",
+]
+
+Nc = 1
 calc_type = "ACE"
 
-method = "ACECURMEAN"
-Nc = 20
+for method in methods:
+    print(method)
+    if calc_type == "GAP":
+        calc_fn = test_gap
+    elif calc_type == "ACE":
+        calc_fn = test_ace
 
-if calc_type == "GAP":
-    calc_fn = test_gap
-elif calc_type == "ACE":
-    calc_fn = test_ace
+    if os.path.exists(f"../Test_Results/{method}/{method}_Surfaces_{calc_type}.json"):
+        with open(f"../Test_Results/{method}/{method}_Surfaces_{calc_type}.json", "r") as f:
+            data = json.load(f)
+    else:
+        data = {}
 
-if os.path.exists(f"../Test_Results/{method}/{method}_Surfaces_{calc_type}.json"):
-    with open(f"../Test_Results/{method}/{method}_Surfaces_{calc_type}.json", "r") as f:
-        data = json.load(f)
-else:
-    data = {}
-
-for N in [5, 10, 20, 50, 100]:
-    print(N)
-    
-    data[str(N)] = {}
-
-    # dft_vals = [
-    #     153.3, 56.3, 72.2
-    # ]
-
-    # alat, elastic constants
-    E100s = np.zeros((Nc))
-    E110s = np.zeros_like(E100s)
-    E111s = np.zeros_like(E100s)
-
-    for i in range(Nc):
-        calc = calc_fn(method, N, [i])[0]
-        E100, E110, E111 = test_calc(calc)
+    for N in [5, 10, 20, 50, 100]:
+        print(N)
         
-        
-        E100s[i] = E100
-        E110s[i] = E110
-        E111s[i] = E111
+        data[str(N)] = {}
 
-    data[str(N)]["E100_mean"] = np.mean(E100s)
-    data[str(N)]["E110_mean"] = np.mean(E110s)
-    data[str(N)]["E111_mean"] = np.mean(E111s)
+        # dft_vals = [
+        #     153.3, 56.3, 72.2
+        # ]
 
-    data[str(N)]["E100_std"] = np.std(E100s)
-    data[str(N)]["E110_std"] = np.std(E110s)
-    data[str(N)]["E111_std"] = np.std(E111s)
+        # alat, elastic constants
+        E100s = np.zeros((Nc))
+        E110s = np.zeros_like(E100s)
+        E111s = np.zeros_like(E100s)
 
-    data[str(N)]["E100_raw_vals"] = list(E100s)
-    data[str(N)]["E110_raw_vals"] = list(E110s)
-    data[str(N)]["E111_raw_vals"] = list(E111s)
+        for i in range(Nc):
+            calc = calc_fn(method, N, [i])[0]
+            E100, E110, E111 = test_calc(calc)
+            
+            
+            E100s[i] = E100
+            E110s[i] = E110
+            E111s[i] = E111
 
-os.makedirs(f"../Test_Results/{method}", exist_ok=True)
+        data[str(N)]["E100_mean"] = np.mean(E100s)
+        data[str(N)]["E110_mean"] = np.mean(E110s)
+        data[str(N)]["E111_mean"] = np.mean(E111s)
 
-# Ensure keys are sorted as integers
-Ns = sorted([int(k) for k in data.keys()])
+        data[str(N)]["E100_std"] = np.std(E100s)
+        data[str(N)]["E110_std"] = np.std(E110s)
+        data[str(N)]["E111_std"] = np.std(E111s)
 
-data = {N: data[str(N)] for N in Ns}
-with open(f"../Test_Results/{method}/{method}_Surfaces_{calc_type}.json", "w") as f:
-    json.dump(data, f, indent=4)
+        data[str(N)]["E100_raw_vals"] = list(E100s)
+        data[str(N)]["E110_raw_vals"] = list(E110s)
+        data[str(N)]["E111_raw_vals"] = list(E111s)
+
+    os.makedirs(f"../Test_Results/{method}", exist_ok=True)
+
+    # Ensure keys are sorted as integers
+    Ns = sorted([int(k) for k in data.keys()])
+
+    data = {N: data[str(N)] for N in Ns}
+    with open(f"../Test_Results/{method}/{method}_Surfaces_{calc_type}.json", "w") as f:
+        json.dump(data, f, indent=4)

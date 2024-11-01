@@ -58,3 +58,23 @@ def ace_descriptor(species, **kwargs):
         return descriptors
 
     return calc_descriptor
+
+
+def mace_descriptor(fpath, invariants_only=False):
+    from mace.calculators import MACECalculator
+    model = MACECalculator(model_paths=fpath, device="cpu")
+
+    def inner(ats):
+        return model.get_descriptors(ats, invariants_only=invariants_only)
+
+    return inner
+
+
+def mace_mp_descriptor(model="medium", default_dtype="float64", invariants_only=False):
+    from mace.calculators import mace_mp
+    model = mace_mp(model=model, default_dtype=default_dtype)
+
+    def inner(ats):
+        return model.get_descriptors(ats, invariants_only=invariants_only)
+
+    return inner

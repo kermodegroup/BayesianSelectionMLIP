@@ -1,6 +1,6 @@
 from sklearn_extra.cluster import KMedoids
 import numpy as np
-from .utils import extract_isoats, get_dataset_descriptors
+from .utils import extract_isoats, get_dataset_descriptors, get_dataset_avg_descriptors
 
 
 def draw_avg_kmedoid_samples(dataset, desc, N_structs, iso_atom_config_type=None, **kwargs):
@@ -33,11 +33,8 @@ def draw_avg_kmedoid_samples(dataset, desc, N_structs, iso_atom_config_type=None
 
     ds, isos = extract_isoats(dataset, iso_atom_config_type)
 
-    vecs, idxs = get_dataset_descriptors(ds, desc)
+    avg_vecs = get_dataset_avg_descriptors(ds, desc)
 
-    N = len(ds)
-
-    avg_vecs = np.array([np.average(vecs[idxs==i, :], axis=0) for i in range(N)])
     samples = []
     
     for N in N_structs:

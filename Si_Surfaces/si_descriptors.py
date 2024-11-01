@@ -1,4 +1,12 @@
-from ActiveLearnMLIPTests import soap_descriptor, ace_descriptor
+from ActiveLearnMLIPTests import soap_descriptor, ace_descriptor, mace_mp_descriptor, mace_descriptor
+from pathlib import Path
+
+
+si_ace_descriptor = ace_descriptor(
+    species = ["Si"],
+    order = 3,
+    totaldegree = 16,
+    rcut = 5.0)
 
 si_soap_descriptor = soap_descriptor(" \
     soap \
@@ -13,9 +21,11 @@ si_soap_descriptor = soap_descriptor(" \
     f0=0.0 \
     covariance_type=dot_product \
 ")
+    
+mace_mp_descriptor = mace_mp_descriptor()
 
-si_ace_descriptor = ace_descriptor(
-    species = ["Si"],
-    order = 3,
-    totaldegree = 16,
-    rcut = 5.0)
+mace_fpath = str(Path(__file__).absolute().parent) + "/Models/BaseMACE/Si_Core_MACE_swa_compiled.model"
+si_mace_descriptor = mace_descriptor(mace_fpath)
+
+mace_fpath = str(Path(__file__).absolute().parent) + "/Models/TotalMACE/Si_Total_MACE_swa_compiled.model"
+si_total_mace_descriptor = mace_descriptor(mace_fpath)

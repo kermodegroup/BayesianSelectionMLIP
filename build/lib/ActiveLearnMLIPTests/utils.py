@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm import trange
 
 def extract_isoats(dataset, iso_atom_config_type=None):
     '''
@@ -28,9 +29,9 @@ def extract_isoats(dataset, iso_atom_config_type=None):
             if image.info["config_type"] == iso_atom_config_type:
                 is_iso = True
         if is_iso:
-            iso_ats.extend(image)
+            iso_ats.append(image)
         else:
-            remainder.extend(image)
+            remainder.append(image)
 
     return remainder, iso_ats
 
@@ -59,15 +60,49 @@ def get_dataset_descriptors(dataset, descriptor):
 
     nats = 0
 
-    for i, struct in enumerate(dataset):
+    for i in trange(len(dataset), leave=False, desc="Evaluating Descriptors"):
+        struct = dataset[i]
         res = descriptor(struct)
 
         vecs[nats:nats+len(struct), :] = res
 
-        nats += len(struct)
+        struct_idxs[nats:nats+len(struct)] = i
         
-        struct_idxs[nats:nats+len(struct), :] = i
+        nats += len(struct)
     
     struct_idxs = np.array(struct_idxs)
 
     return vecs, struct_idxs
+
+def get_dataset_avg_descriptors(dataset, descriptor):
+    '''
+    Gets average descriptor vectors for a full dataset
+
+    dataset: list of ase Atoms objects
+        Dataset to evaluate descriptor vectors
+    descriptor: callable
+        Descriptor function with signature descriptor(atoms) -> np array of shape (len(atoms), descriptor_length)
+
+    Returns:
+    vecs: np array of shape (np.sum([len(ats) for ats in dataset]), descriptor_length)
+        Descriptor vecs for full dataset
+    idxs: np array of shape (np.sum([len(ats) for ats in dataset]))
+        Structure indexes for each descriptor vector. (idxs == i) creates a mask for all descriptor vectors for the ith structure in dataset
+    '''
+
+    descriptor_length = descriptor(dataset[0]).shape[-1]
+
+    vecs = np.zeros((len(dataset), descriptor_length))
+
+    for i in trange(len(dataset), leave=False, desc="Evaluating Descriptors"):
+        struct = dataset[i]
+        res = descriptor(struct)
+
+        if len(res.shape) == 1:
+            # result is 1D, assume shape is (len(descriptor))
+            # Convert to 2D
+            res = res[np.newaxis, :]
+
+        vecs[i, :] = np.average(res, axis=0)
+
+    return vecs

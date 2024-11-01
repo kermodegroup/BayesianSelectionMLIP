@@ -11,6 +11,9 @@ setup(
                       'numpy',
                       'quippy',
                       'scikit-learn-extra',
-                      'ase'           
+                      'ase',
+                      'mpi4py',
+                      'mace-torch',
+                      "tqdm"
                       ]
 )

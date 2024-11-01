@@ -1,16 +1,21 @@
 import os
 import shutil
 from julia import Main
+import numpy as np
+from Tests.plot_config import *
 
-method = "ACEAVGCUR"
 
-os.makedirs(f"Models/ACEs/{method}", exist_ok=True)
+methods = method_comparison_plots
+methods= [
+    "MACETBLR"
+]
 
-os.chdir(f"Models/ACEs/{method}")
 
-data_src = f"../../../AL_Datasets/{method}"
+fdir = str(os.path.dirname(os.path.abspath(__file__)))
 
-xyz_files = [file for file in os.listdir(data_src) if ".xyz" in file]
+overwrite = False
+
+np.random.shuffle(methods)
 
 Main.eval("using ACEpotentials")
 
@@ -42,19 +47,29 @@ fit_ace = Main.eval('''
     end
 ''')
 
+for method in methods:
+    os.makedirs(fdir + f"/Models/ACEs/{method}", exist_ok=True)
 
-for i, file in enumerate(xyz_files):
-    name = file[:-4]
-    print(f"{i+1}/{len(xyz_files)}", name)
-    os.makedirs(name, exist_ok=True)
-    os.chdir(name)
+    data_src = fdir + f"/AL_Datasets/{method}"
 
-    if name + ".json" not in os.listdir():
+    os.chdir(fdir + f"/Models/ACEs/{method}")
 
-        # Copy dataset
-        shutil.copyfile("../" + data_src + os.sep + file, file)
+    xyz_files = [file for file in os.listdir(data_src) if ".xyz" in file]
 
-        # Run ACE fit
-        fit_ace(name)
+    np.random.shuffle(xyz_files)
 
-    os.chdir("..")
+    for i, file in enumerate(xyz_files):
+        name = file[:-4]
+        print(f"{i+1}/{len(xyz_files)}", name)
+        os.makedirs(name, exist_ok=True)
+        os.chdir(name)
+
+        if overwrite or name + ".json" not in os.listdir():
+
+            # Copy dataset
+            shutil.copyfile(data_src + os.sep + file, file)
+
+            # Run ACE fit
+            fit_ace(name)
+
+        os.chdir("..")

@@ -2,72 +2,136 @@ import json
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+from plot_config import *
+import matplotlib as mpl
 
-models = [
-    #"MONTECARLO_GAP",
-    #"SOAPCURMEAN_GAP",
-    "MONTECARLO_ACE",
-    "ACECURMEAN_ACE",
-    "ACEAVGCUR_ACE",
-    "HALFORCE_ACE",
-    "ACEAVGKMED_ACE"
-]
+plt.rcParams["axes.labelsize"] = 15
+plt.rcParams["axes.titlesize"] = 18
+plt.rcParams["xtick.labelsize"] = 15
+plt.rcParams["ytick.labelsize"] = 15
+plt.rcParams["xtick.major.size"] = 12
+plt.rcParams["ytick.major.size"] = 12
+plt.rcParams["xtick.minor.size"] = 8
+plt.rcParams["ytick.minor.size"] = 8
 
-data = {}
+plot = "desc"
+plot = "method"
 
-for m, model in enumerate(models):
-    mod, pot = model.split("_")
-    if not os.path.exists(f"../Test_Results/{mod}/{mod}_Dataset_Errs_{pot}.json"):
-        # Skip as data not available
-        continue
+mth = "KMED"
+mth = "FPS"
+mth = "BLR"
 
-    with open(f"../Test_Results/{mod}/{mod}_Dataset_Errs_{pot}.json", "r") as f:
-        model_data = json.load(f)
+with open(f"../Test_Results/2018_GAP.json", "r") as f:
+    ref_data = json.load(f)
 
-    for key in model_data.keys():
-        if key not in data.keys():
-            data[key] = {}
+for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc", "BLR"]]:
 
-        data[key][model] = model_data[key]
+    data = {}
 
-Ns = list(data.keys())
-N_ints = [int(n) for n in Ns]
-models = list(data[Ns[0]].keys())
-config_types = list(data[Ns[0]][models[0]].keys())
+    if plot == "desc":
+        models = descriptor_comparison_plots
+        kwargs = desc_comp_kwargs
+    else:
+        models = method_comparison_plots
+        kwargs = method_comp_kwargs
 
-for config_type in config_types:
-    plt.clf()
-    fig, ax = plt.subplots(nrows=2, figsize=(10, 15), sharex=True)
+    for m, mod in enumerate(models):
+        print(mod)
 
-    for m, model in enumerate(models):
-        E_rmses = np.array([data[n][model][config_type]["E_rmse_mean"] for n in Ns if (model in data[n].keys())]) * 1000
-        F_rmses = np.array([data[n][model][config_type]["F_rmse_mean"] for n in Ns if (model in data[n].keys())]) * 1000
+        for pot in ["ACE"]:
 
-        N_ints = [n for n in Ns if (model in data[n].keys())]
-        # E_rmse_maxs = np.array([np.max(data[n][model][config_type]["E_rmse_raw_vals"]) for n in Ns if (model in data[n].keys())]) * 1000
-        # F_rmse_maxs = np.array([np.max(data[n][model][config_type]["F_rmse_raw_vals"]) for n in Ns if (model in data[n].keys())]) * 1000
+            if not os.path.exists(f"../Test_Results/{mod}/{mod}_Dataset_Errs_{pot}.json"):
+                # Skip as data not available
+                print(mod, pot, "not found")
+                continue
 
-        # E_rmse_mins = np.array([np.min(data[n][model][config_type]["E_rmse_raw_vals"]) for n in Ns if (model in data[n].keys())]) * 1000
-        # F_rmse_mins = np.array([np.min(data[n][model][config_type]["F_rmse_raw_vals"]) for n in Ns if (model in data[n].keys())]) * 1000
+            with open(f"../Test_Results/{mod}/{mod}_Dataset_Errs_{pot}.json", "r") as f:
+                model_data = json.load(f)
 
-        ax[0].plot(N_ints, E_rmses, label=model, color=f"C{m}", marker="o")
-        #ax[0].plot(N_ints, E_rmse_maxs, color=f"C{m}", marker="o", linestyle="dashed")
-        #ax[0].plot(N_ints, E_rmse_mins, color=f"C{m}", marker="o", linestyle="dashed")
+            for key in model_data.keys():
+                if key not in data.keys():
+                    data[key] = {}
 
-        ax[1].plot(N_ints, F_rmses, label=model, color=f"C{m}", marker="o")
-        #ax[1].plot(N_ints, F_rmse_maxs, color=f"C{m}", marker="o", linestyle="dashed")
-        #ax[1].plot(N_ints, F_rmse_mins, color=f"C{m}", marker="o", linestyle="dashed")
+                data[key][mod + "_" + pot] = model_data[key]
 
-    ax[1].set_xlabel("N_struct")
-    ax[0].set_ylabel(f"Energy RMSEs (meV/Atom)")
-    ax[1].set_ylabel(f"Force RMSEs (meV/Ang)")
+    if models == descriptor_comparison_plots:
+        desc_comp = True
+    else:
+        desc_comp = False
 
-    ax[0].set_title("Energy Errors")
-    ax[1].set_title("Force Errors")
+    Ns = list(data.keys())
+    N_ints = [int(n) for n in Ns]
+    config_types = list(data[Ns[0]][list(data[Ns[0]].keys())[0]].keys())
 
-    ax[0].set_yscale("log")
-    ax[1].set_yscale("log")
-    ax[0].legend()
-    plt.tight_layout()
+    for config_type in config_types:
+        if config_type == "IsolatedAtom":
+            continue
+        plt.clf()
 
-    plt.savefig(f"../Plots/Dataset_Errs/{config_type}_Dataset_Errs.png")
+        n_plots = 2
+        fig, ax = plt.subplots(ncols=n_plots, figsize=(8 * n_plots, 8), sharex=False)
+
+        if len(ax) > 2:
+            ax[-1].axis("off")
+
+        for m, mod in enumerate(models):
+            if mth not in mod and "MONTECARLO" not in mod and plot == "desc":
+                continue
+            if not os.path.exists(f"../Test_Results/{mod}/{mod}_Dataset_Errs_{pot}.json"):
+                # Skip as data not available
+                continue
+            for pot in ["ACE"]:
+                model = mod + "_" + pot
+
+                E_rmses = np.array([data[n][model][config_type]["E_rmse_mean"] for n in Ns if (model in data[n].keys())]) * 1000
+                F_rmses = np.array([data[n][model][config_type]["F_rmse_mean"] for n in Ns if (model in data[n].keys())]) * 1000
+
+                #N_ints = [n for n in Ns if (model in data[n].keys())]
+                
+                ax[0].plot(N_ints, E_rmses, label=desc_names(mod), **kwargs[mod], marker=".", linewidth=2, markersize=10.0)
+
+                ax[1].plot(N_ints, F_rmses, label=desc_names(mod), **kwargs[mod], marker=".", linewidth=2, markersize=10.0)
+
+                if "MONTECARLO" in mod or "CUR" in mod:
+                    E_stds = np.array([np.std(np.array(data[n][model][config_type]["E_rmse_raw_vals"])) for n in Ns])
+                    E_stds *= 1000 / np.sqrt(len(data[Ns[0]][model][config_type]["E_rmse_raw_vals"]))
+
+                    F_stds =  np.array([np.std(np.array(data[n][model][config_type]["F_rmse_raw_vals"])) for n in Ns])
+                    F_stds *= 1000 / np.sqrt(len(data[Ns[0]][model][config_type]["F_rmse_raw_vals"]))
+
+                    ax[0].errorbar(N_ints, E_rmses, yerr = E_stds, color = kwargs[mod]["color"], alpha=0.8, capsize=8.0, elinewidth=2.5, capthick=2.5)
+                    ax[1].errorbar(N_ints, F_rmses, yerr = F_stds, color = kwargs[mod]["color"], alpha=0.8, capsize=8.0, elinewidth=2.5, capthick=2.5)
+
+        # E_rmses = ref_data[config_type]["E_rmse"] * 1000
+        # F_rmses = ref_data[config_type]["F_rmse"] * 1000
+
+        # ax[0].axhline(E_rmses, label="2018 GAP Reference", color="k", linestyle="dashed", linewidth=2, markersize=10.0)
+
+        # ax[1].axhline(F_rmses, label="2018 GAP Reference", color="k", linestyle="dashed", linewidth=2, markersize=10.0)
+
+        ax[0].set_xlabel("Number of Surface Structures")
+        ax[1].set_xlabel("Number of Surface Structures")
+        ax[0].set_ylabel(f"Energy RMSE (meV/Atom)")
+        ax[1].set_ylabel(f"Force RMSE (meV/Ang)")
+
+        ax[0].set_title("Energy Errors")
+        ax[1].set_title("Force Errors")
+
+        #ax[0].set_yscale("log")
+        #ax[1].set_yscale("log")
+        handles, labs = ax[0].get_legend_handles_labels()
+        idxs = np.argsort(labs)
+
+        ax[-1].legend([handles[idx] for idx in idxs], [labs[idx] for idx in idxs], ncol=1, fontsize=17)
+
+        if "Total" in config_type:
+            ax[0].set_ylim(3, 22.0)
+            ax[1].set_ylim(130, 230)
+
+        plt.tight_layout()
+        if desc_comp:
+            plt.savefig(f"../Plots/Dataset_Errs/{config_type}_Dataset_Errs_Desc_{mth}.png", dpi=200)
+        else:
+            plt.savefig(f"../Plots/Dataset_Errs/{config_type}_Dataset_Errs_Method.png", dpi=200)
+
+        plt.close()

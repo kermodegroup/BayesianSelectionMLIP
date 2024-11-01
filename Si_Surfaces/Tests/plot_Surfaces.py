@@ -2,57 +2,115 @@ import os
 import json
 import matplotlib.pyplot as plt
 import numpy as np
+from plot_config import *
 
-# DFT vals for E100, E110, E111 (see )
-dft_values = [
-    2.17, 1.52, 1.57
-]
+plt.rcParams["axes.labelsize"] = 15
+plt.rcParams["axes.titlesize"] = 18
+plt.rcParams["xtick.labelsize"] = 15
+plt.rcParams["ytick.labelsize"] = 15
+plt.rcParams["xtick.major.size"] = 12
+plt.rcParams["ytick.major.size"] = 12
+plt.rcParams["xtick.minor.size"] = 8
+plt.rcParams["ytick.minor.size"] = 8
 
-props = ["E100", "E110", "E111"]
 
-models = [
-    #"MONTECARLO_GAP",
-    #"SOAPCURMEAN_GAP",
-    "MONTECARLO_ACE",
-    "ACECURMEAN_ACE",
-    "ACEAVGCUR_ACE",
-    "HALFORCE_ACE",
-    "ACEAVGKMED_ACE"
-]
+plot = "method"
+plot = "desc"
 
-fig, ax = plt.subplots(2, 2, figsize=(15, 15))
+mth = "KMED"
+mth = "FPS"
+mth = "BLR"
 
-ax = ax.flatten()
+for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc", "BLR"]]:
 
-for i, prop in enumerate(props):
-    ax[i].set_title(prop)
-    ax[i].set_xlabel("N_struct")
-    ax[i].set_ylabel(f"Error from DFT (J/m^2)")
-    ax[i].set_yscale("log")
 
-ax[-1].axis("off")
+    if plot == "desc":
+        models = descriptor_comparison_plots
+        kwargs = desc_comp_kwargs
+    else:
+        models = method_comparison_plots
+        kwargs = method_comp_kwargs
 
-for m, model in enumerate(models):
-    mod, pot = model.split("_")
-    if not os.path.exists(f"../Test_Results/{mod}/{mod}_Surfaces_{pot}.json"):
-        # Skip as data not available
-        continue
+    # DFT vals for E100, E110, E111 (see )
+    dft_values = [
+        2.17, 1.52, 1.57
+    ]
 
-    with open(f"../Test_Results/{mod}/{mod}_Surfaces_{pot}.json", "r") as f:
-        data = json.load(f)
+    gap_errors = np.array([2, 1, 2]) * np.array(dft_values) / 1000
+    print(gap_errors)
 
-    Ns = [int(k) for k in data.keys()]
+    props = ["E100", "E110", "E111"]
 
-    for i, prop in enumerate(props):
-        errs = [np.sqrt(np.mean((np.array(ndata[prop + "_raw_vals"]) - dft_values[i])**2))for ndata in data.values()]
+    plot_props = [0, 2]
 
-        max_err = [np.max(np.abs(np.array(ndata[prop + "_raw_vals"]) - dft_values[i]))for ndata in data.values()]
-        min_err = [np.min(np.abs(np.array(ndata[prop + "_raw_vals"]) - dft_values[i]))for ndata in data.values()]
+    fig, ax = plt.subplots(1, len(plot_props), figsize=(8 * len(plot_props), 8))
 
-        ax[i].plot(Ns, errs, label=model, color=f"C{m}", marker="o")
-        #ax[i].plot(Ns, max_err, color=f"C{m}", marker="o", linestyle="dashed")
-        #ax[i].plot(Ns, min_err, color=f"C{m}", marker="o", linestyle="dashed")
+    ax = ax.flatten()
 
-ax[0].legend()
-plt.tight_layout()
-plt.savefig("../Plots/Surfaces.png", dpi=200)
+    for i in range(len(plot_props)):
+        prop = props[plot_props[i]]
+        ax[i].set_title("(" + prop[1:] + ") Surface Formation Energy")
+        ax[i].set_xlabel("Number of Surface Structures")
+        ax[i].set_ylabel(f"Error from DFT (J/m^2)")
+        #ax[i].set_yscale("log")
+        ax[i].set_ylim(0, 0.40)
+
+    #ax[-1].axis("off")
+
+    if models == descriptor_comparison_plots:
+        desc_comp = True
+    else:
+        desc_comp = False
+
+
+    for m, mod in enumerate(models):
+        if mth not in mod and "MONTECARLO" not in mod and plot == "desc":
+            continue
+        print(mod)
+        #for pot in ["GAP", "ACE"]:
+        for pot in ["ACE"]:
+            if not os.path.exists(f"../Test_Results/{mod}/{mod}_Surfaces_{pot}.json"):
+                # Skip as data not available
+                continue
+
+            with open(f"../Test_Results/{mod}/{mod}_Surfaces_{pot}.json", "r") as f:
+                data = json.load(f)
+
+            Ns = [int(k) for k in data.keys()]
+
+            for i in range(len(plot_props)):
+                prop = props[plot_props[i]]
+                errs = np.array([np.sqrt(np.mean((np.array(ndata[prop + "_raw_vals"]) - dft_values[i])**2)) for ndata in data.values()])
+
+                max_err = [np.max(np.abs(np.array(ndata[prop + "_raw_vals"]) - dft_values[i]))for ndata in data.values()]
+                min_err = [np.min(np.abs(np.array(ndata[prop + "_raw_vals"]) - dft_values[i]))for ndata in data.values()]
+
+                ax[i].plot(Ns, errs, label=desc_names(mod), **kwargs[mod], marker=".", linewidth=2, markersize=10.0)
+
+                if "MONTECARLO" in mod or "CUR" in mod:
+                    stds =  np.array([np.std(np.array(ndata[prop + "_raw_vals"]))for ndata in data.values()])
+                    stds /= np.sqrt(len(list(data.values())[0][prop + "_raw_vals"]))
+                    #ax[i].plot(Ns, errs + 2*stds, color = kwargs[mod]["color"], linestyle = "dotted")
+                    #ax[i].plot(Ns, errs - 2*stds, color = kwargs[mod]["color"], linestyle = "dotted")
+                    if "MONTECARLO" in mod:
+                        label = f"Error across {len(list(data.values())[0][prop + '_raw_vals'])} samples"
+                    else:
+                        label=None
+                    label=None
+                    ax[i].errorbar(Ns, errs,yerr = stds, color = kwargs[mod]["color"], alpha=0.8, capsize=8.0, elinewidth=2.5, capthick=2.5, label=label)
+
+
+    for i in range(len(plot_props)):
+        errs = gap_errors[plot_props[i]]
+        ax[i].axhline(errs, color="k", linestyle="dashed", label="2018 Si GAP Benchmark")
+        
+    handles, labels = ax[0].get_legend_handles_labels()
+    idxs = np.argsort(labels)
+
+    ax[0].legend([handles[idx] for idx in idxs], [labels[idx] for idx in idxs], fontsize=17)
+    plt.tight_layout()
+
+    if desc_comp:
+        plt.savefig(f"../Plots/Surfaces_Desc_{mth}.png", dpi=200)
+    else:
+        plt.savefig(f"../Plots/Surfaces_Method.png", dpi=200)
