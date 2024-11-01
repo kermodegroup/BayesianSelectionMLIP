@@ -168,7 +168,7 @@ method_params = {
         "write_gap_config" : False
     },
     "ACEBLR" : {
-        "method" : al_strats.async_hal,
+        "method" : al_strats.bayesian_selection,
         "method_args" : {
             "descriptor" : si_ace_descriptor,
             "core_ds" : core_dataset,
@@ -176,7 +176,7 @@ method_params = {
         },
     },
     "MACEBLR" : {
-        "method" : al_strats.async_hal,
+        "method" : al_strats.bayesian_selection,
         "method_args" : {
             "descriptor" : si_mace_descriptor,
             "core_ds" : core_dataset,
@@ -184,7 +184,7 @@ method_params = {
         },
     },
     "MACETBLR" : {
-        "method" : al_strats.async_hal,
+        "method" : al_strats.bayesian_selection,
         "method_args" : {
             "descriptor" : si_total_mace_descriptor,
             "core_ds" : core_dataset,
@@ -192,7 +192,7 @@ method_params = {
         },
     },
     "SOAPBLR" : {
-        "method" : al_strats.async_hal,
+        "method" : al_strats.bayesian_selection,
         "method_args" : {
             "descriptor" : si_soap_descriptor,
             "core_ds" : core_dataset,
@@ -200,7 +200,7 @@ method_params = {
         },
     },
     "MP0BLR" : {
-        "method" : al_strats.async_hal,
+        "method" : al_strats.bayesian_selection,
         "method_args" : {
             "descriptor" : mace_mp_descriptor,
             "core_ds" : core_dataset,

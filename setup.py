@@ -9,6 +9,7 @@ setup(
     packages=['ActiveLearnMLIPTests'],
     install_requires=['matscipy',
                       'numpy',
+                      'scipy',
                       'quippy',
                       'scikit-learn-extra',
                       'ase',
