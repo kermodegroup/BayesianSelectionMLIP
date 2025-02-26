@@ -1,7 +1,8 @@
 from ase.io import read, write
 import json
+import numpy as np
 
-full_dataset = read("../Si/Si_Dataset.xyz", index=":")
+full_dataset = read("Si_2018_Dataset.xyz", index=":")
 
 pd_config_types = [""]
 
@@ -33,17 +34,12 @@ for structure in all_structs:
     N = len(structure)
 
     if ct not in config_types.keys():
-        config_types[ct] = {"Nats" : N, "Nstruct" : 1}
+        config_types[ct] = [len(structure)]
     else:
-        config_types[ct]["Nats"] += N
-        config_types[ct]["Nstruct"] += 1
+        config_types[ct].append(len(structure))
 
 for ct in config_types.keys():
-    config_types[ct]["Nats"] /= config_types[ct]["Nstruct"]
-
-with open("Total_Dataset_info.json", "w") as f:
-    json.dump(config_types, f, indent=4) 
-
+    print(ct, np.unique(config_types[ct], return_counts=True))
 # write("Total_Dataset.xyz", all_structs)
 
 

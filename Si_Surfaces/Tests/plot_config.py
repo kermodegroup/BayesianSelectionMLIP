@@ -1,21 +1,28 @@
 
 descriptor_comparison_plots = [ # Descriptor comparison, do kmedoids for each descriptor plus MONTECARLO as a baseline 
     "MONTECARLO",
-    "SOAPAVGKMED",
+    #"SOAPAVGKMED",
     "ACEAVGKMED",
+    "ACESAVGKMED",
+    "ACELAVGKMED",
     "MP0AVGKMED",
+    #"MPAAVGKMED",
     "MACEAVGKMED",
     "MACETAVGKMED",
-    "SOAPAVGFPS",
+    #"SOAPAVGFPS",
     "ACEAVGFPS",
     "MP0AVGFPS",
+    #"MPAAVGFPS",
     "MACEAVGFPS",
     "MACETAVGFPS",
-    "SOAPBLR",
+    #"SOAPBLR",
     "ACEBLR",
+    "ACESBLR",
+    "ACELBLR",
     "MP0BLR",
+    #"MPABLR",
     "MACEBLR",
-    "MACETBLR"
+    "MACETBLR",
 ]
 
 method_comparison_plots = [ # Sparsification method comparison, do all methods using ACE descriptor plus MONTECARLO as a baseline 
@@ -24,7 +31,7 @@ method_comparison_plots = [ # Sparsification method comparison, do all methods u
     "ACEAVGFPS",
     "ACECURMEAN",
     "ACEAVGCUR",
-    "ACEBLR"
+    "ACEBLR",
 ]
 
 desc_comp_kwargs = {
@@ -43,7 +50,14 @@ desc_comp_kwargs = {
     "ACEBLR" : {"color": "C1", "linestyle" : "solid"},
     "MP0BLR" : {"color": "C2", "linestyle" : "solid"},
     "MACEBLR" : {"color": "C3", "linestyle" : "solid"},
-    "MACETBLR" : {"color": "C4", "linestyle": "solid"}
+    "MACETBLR" : {"color": "C4", "linestyle": "solid"},
+    "ACESBLR" : {"color": "C5", "linestyle" : "solid"},
+    "ACELBLR" : {"color": "C6", "linestyle" : "solid"},
+    "ACESAVGKMED" : {"color": "C5", "linestyle" : "solid"},
+    "ACELAVGKMED" : {"color": "C6", "linestyle" : "solid"},
+    "MPABLR" : {"color": "C7", "linestyle" : "solid"},
+    "MPAAVGFPS" : {"color": "C7", "linestyle" : "solid"},
+    "MPAAVGKMED" : {"color": "C7", "linestyle" : "solid"},
 }
 
 method_names = {
@@ -66,9 +80,18 @@ def desc_names(name):
     elif "MACE" in name:
         return "MACE (Core)" + method_names[name[4:]]
     elif "ACE" in name:
-        return "ACE" + method_names[name[3:]]
+        if name[3] == "S":
+            # ACE S
+            return "ACE (S)" + method_names[name[4:]]
+        elif name[3] == "L":
+            # ACE L
+            return "ACE (L)" + method_names[name[4:]]
+        else:
+            return "ACE (M)" + method_names[name[3:]]
     elif "MP0" in name:
         return "MP0 Foundation" + method_names[name[3:]]
+    elif "MPA" in name:
+        return "MPA Foundation" + method_names[name[3:]]
     else:
         return method_names[name]
 
@@ -92,8 +115,18 @@ def split_mod(mod):
         desc = "MACE(C)"
         method = mod[4:]
     elif "ACE" in mod:
-        desc = "ACE"
-        method = mod[3:]
+        print(mod, mod[3])
+        if mod[3] == "S":
+            # ACE S
+            desc = "ACE (S)"
+            method = mod[4:]
+        elif mod[3] == "L":
+            # ACE S
+            desc = "ACE (L)"
+            method = mod[4:]
+        else:
+            desc = "ACE (M)"
+            method = mod[3:]
     elif "SOAP" in mod:
         desc = "SOAP"
         method = mod[4:]

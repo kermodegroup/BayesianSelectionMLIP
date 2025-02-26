@@ -2,7 +2,7 @@ import ActiveLearnMLIPTests as al_strats
 from ase.io import read, write
 import numpy as np
 import os
-from si_descriptors import si_soap_descriptor, si_ace_descriptor, mace_mp_descriptor, si_mace_descriptor, si_total_mace_descriptor
+from si_descriptors import *
 
 dataset = read("Si_Surface_Structs.xyz", index=":")
 
@@ -206,7 +206,60 @@ method_params = {
             "core_ds" : core_dataset,
             "iso_atom_config_type" : "isolated_atom"
         },
-    }
+    },
+    "ACESBLR" : {
+        "method" : al_strats.bayesian_selection,
+        "method_args" : {
+            "descriptor" : si_ace_small_descriptor,
+            "core_ds" : core_dataset,
+            "iso_atom_config_type" : "isolated_atom"
+        },
+    },
+    "ACELBLR" : {
+        "method" : al_strats.bayesian_selection,
+        "method_args" : {
+            "descriptor" : si_ace_large_descriptor,
+            "core_ds" : core_dataset,
+            "iso_atom_config_type" : "isolated_atom"
+        },
+    },
+    "ACESAVGKMED" : { # KMedoids of average MACE Descriptor per structure
+        "method" : al_strats.draw_avg_kmedoid_samples,
+        "method_args" : {
+            "desc" : si_ace_small_descriptor
+        },
+        "write_gap_config" : False
+    },
+    "ACELAVGKMED" : { # KMedoids of average MACE Descriptor per structure
+        "method" : al_strats.draw_avg_kmedoid_samples,
+        "method_args" : {
+            "desc" : si_ace_large_descriptor
+        },
+        "write_gap_config" : False
+    },
+    "MPAAVGFPS" : { # FPS of average MACE MPA Descriptor per structure
+        "method" : al_strats.draw_avg_fps_samples,
+        "method_args" : {
+            "desc" : mace_mpa_descriptor,
+            "core_dataset" : core_dataset
+        },
+        "write_gap_config" : False
+    },
+    "MPAAVGKMED" : { # KMedoids of average MACE MPA Descriptor per structure
+        "method" : al_strats.draw_avg_kmedoid_samples,
+        "method_args" : {
+            "desc" : mace_mpa_descriptor
+        },
+        "write_gap_config" : False
+    },
+    "MPABLR" : {
+        "method" : al_strats.bayesian_selection,
+        "method_args" : {
+            "descriptor" : mace_mpa_descriptor,
+            "core_ds" : core_dataset,
+            "iso_atom_config_type" : "isolated_atom"
+        },
+    },
 } 
 
 random_seed = 42
@@ -215,13 +268,12 @@ random_seed = 42
 from Tests.plot_config import *
 methods_to_gen = method_comparison_plots
 methods_to_gen = [
-    "SOAPBLR",
-    "MACETBLR",
+    "MPAAVGFPS"
 ]
 
 print(len(methods_to_gen))
 # np.random.shuffle(methods_to_gen)
-methods_to_gen = [methods_to_gen[0]]
+# methods_to_gen = [methods_to_gen[0]]
 
 for method in methods_to_gen:
     print(method)
@@ -261,3 +313,4 @@ for method in methods_to_gen:
                                 f"at_file={ds_name}"
                             ]
                         )
+print("Done")

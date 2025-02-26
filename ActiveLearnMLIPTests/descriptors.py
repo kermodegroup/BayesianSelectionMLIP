@@ -60,9 +60,9 @@ def ace_descriptor(species, **kwargs):
     return calc_descriptor
 
 
-def mace_descriptor(fpath, invariants_only=False):
+def mace_descriptor(fpath, invariants_only=False, device="cpu"):
     from mace.calculators import MACECalculator
-    model = MACECalculator(model_paths=fpath, device="cpu")
+    model = MACECalculator(model_paths=fpath, device=device)
 
     def inner(ats):
         return model.get_descriptors(ats, invariants_only=invariants_only)

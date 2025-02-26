@@ -5,21 +5,14 @@ import numpy as np
 from plot_config import *
 import matplotlib as mpl
 
-plt.rcParams["axes.labelsize"] = 15
-plt.rcParams["axes.titlesize"] = 18
-plt.rcParams["xtick.labelsize"] = 15
-plt.rcParams["ytick.labelsize"] = 15
+plt.rcParams["axes.labelsize"] = 20
+plt.rcParams["axes.titlesize"] = 24
+plt.rcParams["xtick.labelsize"] = 18
+plt.rcParams["ytick.labelsize"] = 18
 plt.rcParams["xtick.major.size"] = 12
 plt.rcParams["ytick.major.size"] = 12
 plt.rcParams["xtick.minor.size"] = 8
 plt.rcParams["ytick.minor.size"] = 8
-
-plot = "desc"
-plot = "method"
-
-mth = "KMED"
-mth = "FPS"
-mth = "BLR"
 
 with open(f"../Test_Results/2018_GAP.json", "r") as f:
     ref_data = json.load(f)
@@ -125,13 +118,14 @@ for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc"
         ax[-1].legend([handles[idx] for idx in idxs], [labs[idx] for idx in idxs], ncol=1, fontsize=17)
 
         if "Total" in config_type:
-            ax[0].set_ylim(3, 22.0)
-            ax[1].set_ylim(130, 230)
-
+            if ax[0].get_ylim()[1] > 17.5:
+                ax[0].set_ylim(None, 17.5)
+            #ax[1].set_ylim(125, 210)
+            pass
         plt.tight_layout()
         if desc_comp:
-            plt.savefig(f"../Plots/Dataset_Errs/{config_type}_Dataset_Errs_Desc_{mth}.png", dpi=200)
+            plt.savefig(f"../Plots/Dataset_Errs/{config_type}_Dataset_Errs_Desc_{mth}.eps")
         else:
-            plt.savefig(f"../Plots/Dataset_Errs/{config_type}_Dataset_Errs_Method.png", dpi=200)
+            plt.savefig(f"../Plots/Dataset_Errs/{config_type}_Dataset_Errs_Method.eps")
 
         plt.close()

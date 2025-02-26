@@ -1,6 +1,7 @@
 import numpy as np
-from quippy.clustering import get_cur_scores
+from wfl.select.by_descriptor import do_svd
 from .utils import extract_isoats, get_dataset_descriptors
+from scipy.linalg import svd
 
 
 def draw_cur_samples(dataset, desc, N_structs, N_samples=1, aggregate=np.average, iso_atom_config_type=None):
@@ -32,7 +33,6 @@ def draw_cur_samples(dataset, desc, N_structs, N_samples=1, aggregate=np.average
         Generated via [[sample(N) for i in range(N_samples)] for N in range N_structs]
     
     '''
-
     if np.issubdtype(type(N_structs), np.integer):
         # Convert to len 1 list
         N_structs = [N_structs]
@@ -46,7 +46,7 @@ def draw_cur_samples(dataset, desc, N_structs, N_samples=1, aggregate=np.average
     samples = []
     
     for N in N_structs:
-        all_sample_idxs = [np.random.choice(idxs, size=N, replace=False, p=scores) for i in range(N_samples)]
+        all_sample_idxs = [np.random.choice(idxs, N, p=(scores / np.sum(scores))) for i in range(N_samples)]
 
         samples.append([
             [
@@ -113,7 +113,7 @@ def draw_avg_cur_samples(dataset, desc, N_structs, N_samples=1, iso_atom_config_
 
     return samples
 
-def cur_scores(structures, desc, aggregate=np.average):
+def cur_scores(structures, desc, N, aggregate=np.average):
     '''
     Compute CUR scores, based on the CUR decomposition of the descriptor vectors.
 
@@ -148,3 +148,16 @@ def cur_scores(structures, desc, aggregate=np.average):
     final_scores /= np.sum(final_scores)
 
     return final_scores
+
+
+def get_cur_scores(mat):
+    '''
+    Code inspired by WFL from https://github.com/libAtoms/workflow/blob/main/wfl/select/by_descriptor.py#L47
+    Allows finer control over how scores are used, whilst following the same protocol as WFL
+    '''
+
+    (u, s, vt) = svd(mat.T)
+
+    c_scores = np.sum(vt ** 2, axis=0) / vt.shape[0]
+
+    return c_scores

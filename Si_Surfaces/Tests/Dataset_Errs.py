@@ -42,22 +42,8 @@ def test_calc(calc):
 
 from plot_config import *
 
-# methods = [
-#     "ACEBLR"
-# ]
-
-calc = original_gap()
-data = test_calc(calc)
-with open(f"../Test_Results/2018_GAP.json", "w") as f:
-        json.dump(data, f, indent=4)
-
-exit()
-
-methods = descriptor_comparison_plots
-methods = method_comparison_plots
-
-methods= [
-    "MACETBLR",
+methods = [
+    "MPABLR", "MPAAVGKMED", "MPAAVGFPS"
 ]
 
 Nc = 1

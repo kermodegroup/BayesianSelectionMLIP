@@ -88,15 +88,8 @@ def test_calc(calc):
 
 from plot_config import *
 
-# methods = [
-#     "ACEBLR"
-# ]
-
-methods = descriptor_comparison_plots
-methods = method_comparison_plots
-
-methods= [
-    "MACETBLR",
+methods = [
+    "MPABLR", "MPAAVGKMED", "MPAAVGFPS"
 ]
 
 Nc = 1

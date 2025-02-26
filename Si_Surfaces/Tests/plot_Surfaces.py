@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from plot_config import *
 
-plt.rcParams["axes.labelsize"] = 15
-plt.rcParams["axes.titlesize"] = 18
-plt.rcParams["xtick.labelsize"] = 15
-plt.rcParams["ytick.labelsize"] = 15
+plt.rcParams["axes.labelsize"] = 20
+plt.rcParams["axes.titlesize"] = 24
+plt.rcParams["xtick.labelsize"] = 18
+plt.rcParams["ytick.labelsize"] = 18
 plt.rcParams["xtick.major.size"] = 12
 plt.rcParams["ytick.major.size"] = 12
 plt.rcParams["xtick.minor.size"] = 8
@@ -51,9 +51,10 @@ for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc"
         prop = props[plot_props[i]]
         ax[i].set_title("(" + prop[1:] + ") Surface Formation Energy")
         ax[i].set_xlabel("Number of Surface Structures")
-        ax[i].set_ylabel(f"Error from DFT (J/m^2)")
-        #ax[i].set_yscale("log")
-        ax[i].set_ylim(0, 0.40)
+        ax[i].set_ylabel(f"Error from DFT (J/m$^2$)")
+        ax[i].set_yscale("log")
+        #ax[i].set_ylim(0, 0.4)
+
 
     #ax[-1].axis("off")
 
@@ -71,6 +72,7 @@ for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc"
         for pot in ["ACE"]:
             if not os.path.exists(f"../Test_Results/{mod}/{mod}_Surfaces_{pot}.json"):
                 # Skip as data not available
+                print("Not Found")
                 continue
 
             with open(f"../Test_Results/{mod}/{mod}_Surfaces_{pot}.json", "r") as f:
@@ -84,7 +86,6 @@ for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc"
 
                 max_err = [np.max(np.abs(np.array(ndata[prop + "_raw_vals"]) - dft_values[i]))for ndata in data.values()]
                 min_err = [np.min(np.abs(np.array(ndata[prop + "_raw_vals"]) - dft_values[i]))for ndata in data.values()]
-
                 ax[i].plot(Ns, errs, label=desc_names(mod), **kwargs[mod], marker=".", linewidth=2, markersize=10.0)
 
                 if "MONTECARLO" in mod or "CUR" in mod:
@@ -102,7 +103,7 @@ for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc"
 
     for i in range(len(plot_props)):
         errs = gap_errors[plot_props[i]]
-        ax[i].axhline(errs, color="k", linestyle="dashed", label="2018 Si GAP Benchmark")
+        #ax[i].axhline(errs, color="k", linestyle="dashed", label="2018 Si GAP Benchmark")
         
     handles, labels = ax[0].get_legend_handles_labels()
     idxs = np.argsort(labels)
@@ -111,6 +112,6 @@ for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc"
     plt.tight_layout()
 
     if desc_comp:
-        plt.savefig(f"../Plots/Surfaces_Desc_{mth}.png", dpi=200)
+        plt.savefig(f"../Plots/Surfaces_Desc_{mth}.eps")
     else:
-        plt.savefig(f"../Plots/Surfaces_Method.png", dpi=200)
+        plt.savefig(f"../Plots/Surfaces_Method.eps")

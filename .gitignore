@@ -7,4 +7,6 @@
 *.out
 *.png
 *.npy
+*.eps
 ActiveLearnMLIPTests.egg-info/
+build/

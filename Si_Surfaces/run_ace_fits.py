@@ -6,10 +6,9 @@ from Tests.plot_config import *
 
 
 methods = method_comparison_plots
-methods= [
-    "MACETBLR"
+methods = [
+    "MPABLR", "MPAAVGKMED", "MPAAVGFPS"
 ]
-
 
 fdir = str(os.path.dirname(os.path.abspath(__file__)))
 
