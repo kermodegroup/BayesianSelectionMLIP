@@ -7,14 +7,16 @@ setup(
     author='Thomas Rocke',
     author_email='thomas.rocke@warwick.ac.uk',
     packages=['ActiveLearnMLIPTests'],
-    install_requires=['matscipy',
-                      'numpy',
+    install_requires=['numpy',
                       'scipy',
-                      'quippy',
+                      'quippy-ase',
                       'scikit-learn-extra',
                       'ase',
                       'mpi4py',
                       'mace-torch',
-                      "tqdm"
+                      'tqdm',
+                      'wfl',
+                      'julia',
+                      'pyjulip'
                       ]
 )
