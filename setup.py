@@ -17,6 +17,6 @@ setup(
                       'tqdm',
                       'wfl',
                       'julia',
-                      'pyjulip'
+                      'https://github.com/casv2/pyjulip.git@master'
                       ]
 )
