@@ -5,7 +5,7 @@
 ### Julia Installation
 To use ACE models and descriptor features, the code requires Julia, with the ACEpotentials (v0.6), ASE, and JuLIP packages installed.
 
-The installation instructions below are modified from the [ACEpotentials v0.6 docs](https://acesuit.github.io/ACEpotentials.jl/v0.6/gettingstarted/installation/)
+The installation instructions below are modified from the [ACEpotentials v0.6 docs](https://acesuit.github.io/ACEpotentials.jl/v0.6/gettingstarted/installation/), to be ran from a `julia` repl:
 
 ```
 using Pkg
