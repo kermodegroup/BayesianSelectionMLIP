@@ -8,5 +8,5 @@
 *.png
 *.npy
 *.eps
-ActiveLearnMLIPTests.egg-info/
+BayesianSelection.egg-info/
 build/

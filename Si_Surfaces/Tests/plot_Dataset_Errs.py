@@ -5,6 +5,10 @@ import numpy as np
 from plot_config import *
 import matplotlib as mpl
 
+
+###
+# Plots Dataset RMSE figures (Figs. 1 & 3)
+
 plt.rcParams["axes.labelsize"] = 20
 plt.rcParams["axes.titlesize"] = 24
 plt.rcParams["xtick.labelsize"] = 18

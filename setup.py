@@ -1,12 +1,12 @@
 from setuptools import setup
 
 setup(
-    name='ActiveLearnMLIPTests',
+    name='BayesianSelection',
     version='0.1.0',    
-    description='MLIP Active Learning Strategy Testing',
+    description='MLIP Dataset Bayesian selection',
     author='Thomas Rocke',
     author_email='thomas.rocke@warwick.ac.uk',
-    packages=['ActiveLearnMLIPTests'],
+    packages=['BayesianSelection'],
     install_requires=['numpy',
                       'scipy',
                       'quippy-ase',

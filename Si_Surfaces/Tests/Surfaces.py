@@ -12,6 +12,11 @@ from ase.units import _e
 from ase.io import write
 import json
 
+###
+# Tests for surface formation energies (Figs 2 & 4). 
+
+
+
 a0 = 5.46
 tol = 3e-3
 
@@ -87,16 +92,18 @@ def test_calc(calc):
 
 
 from plot_config import *
+from ../sampling_config import method_params
 
-methods = [
-    "MPABLR", "MPAAVGKMED", "MPAAVGFPS"
-]
+# methods = method_comparison_plots tests the models used in Figs. 1 & 2
+# methods = descriptor_comparison_plots tests the models used in Figs. 3 & 4
+methods = method_comparison_plots
 
-Nc = 1
 calc_type = "ACE"
 
 for method in methods:
     print(method)
+
+    Nc = method_params[method]["method_args"]["N_samples"]
     if calc_type == "GAP":
         calc_fn = test_gap
     elif calc_type == "ACE":

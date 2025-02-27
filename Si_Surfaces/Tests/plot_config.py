@@ -1,3 +1,7 @@
+###
+# Configuration for which models/methods go with which plot type
+
+
 
 descriptor_comparison_plots = [ # Descriptor comparison, do kmedoids for each descriptor plus MONTECARLO as a baseline 
     "MONTECARLO",

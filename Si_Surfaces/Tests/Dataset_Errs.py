@@ -4,6 +4,11 @@ import numpy as np
 import os
 import json
 
+###
+# Tests for Dataset RMSE Errors (Figs 1 & 3). 
+
+
+
 def test_calc(calc):
     dataset = read("../Total_Dataset.xyz", index=":")
     data = {"Total" : {"E_rmse": 0.0, "N_E" : 0, "F_rmse": 0.0, "N_F" : 0}}
@@ -41,16 +46,18 @@ def test_calc(calc):
     return data
 
 from plot_config import *
+from ../sampling_config import method_params
 
-methods = [
-    "MPABLR", "MPAAVGKMED", "MPAAVGFPS"
-]
+# methods = method_comparison_plots tests the models used in Figs. 1 & 2
+# methods = descriptor_comparison_plots tests the models used in Figs. 3 & 4
+methods = method_comparison_plots
 
-Nc = 1
 calc_type = "ACE"
 
 for method in methods:
     print(method)
+
+    Nc = method_params[method]["method_args"]["N_samples"]
     if calc_type == "GAP":
         calc_fn = test_gap
     elif calc_type == "ACE":

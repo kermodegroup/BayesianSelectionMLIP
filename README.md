@@ -1,4 +1,4 @@
-# ActiveLearnMLIPTests
+# BayesianSelection
  
 ## Installation
 

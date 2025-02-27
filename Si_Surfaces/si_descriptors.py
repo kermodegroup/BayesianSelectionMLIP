@@ -1,5 +1,8 @@
-from ActiveLearnMLIPTests import soap_descriptor, ace_descriptor, mace_mp_descriptor, mace_descriptor
+from BayesianSelection import soap_descriptor, ace_descriptor, mace_mp_descriptor, mace_descriptor
 from pathlib import Path
+
+###
+# Defined Silicon-specific descriptor functions used for sampling 
 
 
 si_ace_descriptor = ace_descriptor(

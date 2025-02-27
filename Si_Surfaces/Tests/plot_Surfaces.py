@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from plot_config import *
 
+
+###
+# Plots Surface Formation Energy figures (Figs. 2 & 4)
+
+
 plt.rcParams["axes.labelsize"] = 20
 plt.rcParams["axes.titlesize"] = 24
 plt.rcParams["xtick.labelsize"] = 18
