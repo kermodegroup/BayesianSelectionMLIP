@@ -5,7 +5,10 @@
 ### Julia Installation
 To use ACE models and descriptor features, the code requires Julia, with the ACEpotentials (v0.6), ASE, and JuLIP packages installed.
 
-The installation instructions below are modified from the [ACEpotentials v0.6 docs](https://acesuit.github.io/ACEpotentials.jl/v0.6/gettingstarted/installation/), to be ran from a `julia` repl:
+A suitable Julia environment is provided via the `Project.toml` and `Manifest.toml` files, which contain a minimal number of required packages. Switching Julia to this project can be achieved by setting the environment variable `export JULIA_PROJECT=.`.
+
+
+To install from scratch, follow the installation instructions below. The code is modified from the [ACEpotentials v0.6 docs](https://acesuit.github.io/ACEpotentials.jl/v0.6/gettingstarted/installation/), and is to be ran from a `julia` repl:
 
 ```
 using Pkg
@@ -18,7 +21,8 @@ Pkg.add("JuLIP")
 Pkg.add("ACE1")
 ```
 
-In order for the Python calls to julia to be using the correct Julia project, we set the environment variable `export JULIA_PROJECT=.`.
+In order for the Python calls to julia to be using the correct Julia project, we require the environment variable `JULIA_PROJECT` to be set.
+
 
 ### Python installation
 The Python requirements can be installed via:
