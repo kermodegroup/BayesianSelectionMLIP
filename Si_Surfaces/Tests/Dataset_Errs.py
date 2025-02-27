@@ -8,9 +8,10 @@ import json
 # Tests for Dataset RMSE Errors (Figs 1 & 3). 
 
 
+os.makedirs(f"../Test_Results/", exist_ok=True)
 
 def test_calc(calc):
-    dataset = read("../Total_Dataset.xyz", index=":")
+    dataset = read("../Si_Total_Dataset.xyz", index=":")
     data = {"Total" : {"E_rmse": 0.0, "N_E" : 0, "F_rmse": 0.0, "N_F" : 0}}
 
     for image in dataset:

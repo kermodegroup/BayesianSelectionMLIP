@@ -3,15 +3,18 @@ from Tests.plot_config import *
 
 ###
 # Generate sampled datasets from Si_Surface_Structs.xyz and save in ./AL_Datasets/
-# methods_to_gen is a list of method names, which are parameterised by sampling_config.method_params[method_name]
+# methods is a list of method names, which are parameterised by sampling_config.method_params[method_name]
 
 random_seed = 42
 
-# methods_to_gen = method_comparison_plots produces datasets for the models in Figs. 1 & 2
-# methods_to_gen = descriptor_comparison_plots produces datasets for the models in Figs. 3 & 4
-methods_to_gen = method_comparison_plots
+# methods = method_comparison_plots produces datasets for the models in Figs. 1 & 2
+# methods = descriptor_comparison_plots produces datasets for the models in Figs. 3 & 4
+methods = method_comparison_plots
 
-for method in methods_to_gen:
+
+os.makedirs(f"AL_Datasets/", exist_ok=True)
+
+for method in methods:
     print(method)
 
     os.makedirs(f"AL_Datasets/{method}", exist_ok=True)

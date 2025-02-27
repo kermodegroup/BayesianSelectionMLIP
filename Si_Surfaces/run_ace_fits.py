@@ -13,9 +13,11 @@ methods = method_comparison_plots
 
 fdir = str(os.path.dirname(os.path.abspath(__file__)))
 
+# Set to True to skip over models which already exist
 overwrite = False
 
-np.random.shuffle(methods)
+os.makedirs(fdir + f"/Models/ACEs/", exist_ok=True)
+
 
 Main.eval("using ACEpotentials")
 

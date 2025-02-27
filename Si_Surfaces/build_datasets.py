@@ -42,6 +42,6 @@ for ct in config_types.keys():
     print(ct, np.unique(config_types[ct], return_counts=True))
 
 
-write("Total_Dataset.xyz", all_structs)
+write("Si_Total_Dataset.xyz", all_structs)
 write("Si_Surface_Structs.xyz", surf)
 write("Si_Core_Data.xyz", core)

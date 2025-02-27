@@ -9,6 +9,11 @@ import matplotlib as mpl
 ###
 # Plots Dataset RMSE figures (Figs. 1 & 3)
 
+
+# File extension for plots, fed to plt.savefig()
+plot_extension = ".eps"
+
+
 plt.rcParams["axes.labelsize"] = 20
 plt.rcParams["axes.titlesize"] = 24
 plt.rcParams["xtick.labelsize"] = 18
@@ -18,8 +23,12 @@ plt.rcParams["ytick.major.size"] = 12
 plt.rcParams["xtick.minor.size"] = 8
 plt.rcParams["ytick.minor.size"] = 8
 
-with open(f"../Test_Results/2018_GAP.json", "r") as f:
-    ref_data = json.load(f)
+
+os.makedirs(f"../Plots/", exist_ok=True)
+os.makedirs(f"../Plots/Dataset_Errs", exist_ok=True)
+
+# with open(f"../Test_Results/2018_GAP.json", "r") as f:
+#     ref_data = json.load(f)
 
 for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc", "BLR"]]:
 
@@ -128,8 +137,8 @@ for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc"
             pass
         plt.tight_layout()
         if desc_comp:
-            plt.savefig(f"../Plots/Dataset_Errs/{config_type}_Dataset_Errs_Desc_{mth}.eps")
+            plt.savefig(f"../Plots/Dataset_Errs/{config_type}_Dataset_Errs_Desc_{mth}{plot_extension}")
         else:
-            plt.savefig(f"../Plots/Dataset_Errs/{config_type}_Dataset_Errs_Method.eps")
+            plt.savefig(f"../Plots/Dataset_Errs/{config_type}_Dataset_Errs_Method{plot_extension}")
 
         plt.close()

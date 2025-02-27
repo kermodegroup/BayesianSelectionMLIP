@@ -40,7 +40,7 @@ si_soap_descriptor = soap_descriptor(" \
 mace_mpa_descriptor = mace_mp_descriptor(model="medium-mpa-0")
 mace_mp_descriptor = mace_mp_descriptor(model="medium")
 
-mace_fpath = str(Path(__file__).absolute().parent) + "/Models/BaseMACE/Si_Core_MACE_swa_compiled.model"
+mace_fpath = str(Path(__file__).absolute().parent) + "/Models/CoreMACE/Si_Core_MACE_swa_compiled.model"
 si_mace_descriptor = mace_descriptor(mace_fpath)
 
 mace_fpath = str(Path(__file__).absolute().parent) + "/Models/TotalMACE/Si_Total_MACE_swa_compiled.model"

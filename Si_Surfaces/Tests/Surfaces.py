@@ -20,6 +20,9 @@ import json
 a0 = 5.46
 tol = 3e-3
 
+
+os.makedirs(f"../Test_Results/", exist_ok=True)
+
 bulks = [
     Diamond(symbol='Si', latticeconstant=a0, directions=[[1,1,0],[1,-1,0],[0,0,1]])*(1,1,10), # 100
     Diamond(symbol="Si", latticeconstant=a0, directions=[[1,-1,0],[0,0,1],[1,1,0]])*(1,1,10), # 110
@@ -92,7 +95,7 @@ def test_calc(calc):
 
 
 from plot_config import *
-from ../sampling_config import method_params
+from ..sampling_config import method_params
 
 # methods = method_comparison_plots tests the models used in Figs. 1 & 2
 # methods = descriptor_comparison_plots tests the models used in Figs. 3 & 4

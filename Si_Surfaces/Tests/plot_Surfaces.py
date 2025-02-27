@@ -9,6 +9,10 @@ from plot_config import *
 # Plots Surface Formation Energy figures (Figs. 2 & 4)
 
 
+# File extension for plots, fed to plt.savefig()
+plot_extension = ".eps"
+
+
 plt.rcParams["axes.labelsize"] = 20
 plt.rcParams["axes.titlesize"] = 24
 plt.rcParams["xtick.labelsize"] = 18
@@ -19,12 +23,7 @@ plt.rcParams["xtick.minor.size"] = 8
 plt.rcParams["ytick.minor.size"] = 8
 
 
-plot = "method"
-plot = "desc"
-
-mth = "KMED"
-mth = "FPS"
-mth = "BLR"
+os.makedirs(f"../Plots/", exist_ok=True)
 
 for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc", "BLR"]]:
 
@@ -117,6 +116,6 @@ for plot, mth in [["method", "KMED"], ["desc", "KMED"], ["desc", "FPS"], ["desc"
     plt.tight_layout()
 
     if desc_comp:
-        plt.savefig(f"../Plots/Surfaces_Desc_{mth}.eps")
+        plt.savefig(f"../Plots/Surfaces_Desc_{mth}{plot_extension}")
     else:
-        plt.savefig(f"../Plots/Surfaces_Method.eps")
+        plt.savefig(f"../Plots/Surfaces_Method{plot_extension}")
