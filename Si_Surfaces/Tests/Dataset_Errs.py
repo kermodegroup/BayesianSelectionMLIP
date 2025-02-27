@@ -47,7 +47,7 @@ def test_calc(calc):
     return data
 
 from plot_config import *
-from ../sampling_config import method_params
+from ..sampling_config import method_params
 
 # methods = method_comparison_plots tests the models used in Figs. 1 & 2
 # methods = descriptor_comparison_plots tests the models used in Figs. 3 & 4
