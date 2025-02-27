@@ -7,7 +7,7 @@ setup(
     author='Thomas Rocke',
     author_email='thomas.rocke@warwick.ac.uk',
     packages=['BayesianSelection'],
-    install_requires=['numpy',
+    install_requires=['numpy<2.0',
                       'scipy',
                       'quippy-ase',
                       'scikit-learn-extra',
