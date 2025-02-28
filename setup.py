@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='BayesianSelection',
-    version='0.1.0',    
+    version='1.0.0',    
     description='MLIP Dataset Bayesian selection',
     author='Thomas Rocke',
     author_email='thomas.rocke@warwick.ac.uk',
