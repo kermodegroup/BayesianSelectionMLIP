@@ -12,6 +12,12 @@ To use ACE models and descriptor features, the code requires Julia, with the ACE
 
 A suitable Julia environment is provided via the `Project.toml` and `Manifest.toml` files, which contain a minimal number of required packages. Switching Julia to this project can be achieved by setting the environment variable `export JULIA_PROJECT=.`, which is required so that importing the `julia` package from Python uses the correct project.
 
+The packages can then be installed from a julia repl using:
+```
+using Pkg
+Pkg.instantiate()
+```
+
 ### Python installation
 The Python requirements can be installed via:
 ```
